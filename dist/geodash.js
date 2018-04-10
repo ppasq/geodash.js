@@ -2409,7 +2409,7 @@ module.exports = {
 module.exports = function($interpolate, $scope)
 {
   geodash.var.history = geodash.var.history || {};
-  
+
   var h = geodash.var.history;
 
   h.state = h.state || {"list": [], cursor: 0};
@@ -2567,7 +2567,7 @@ module.exports = function(options)
 {
   var app = extract("app", options);
   var mainElement = extract("mainElement", options);
-  
+
   app.controller("GeoDashControllerBase", geodash.controllers.GeoDashControllerBase);
   app.controller("GeoDashControllerModal", geodash.controllers.GeoDashControllerModal);
 
@@ -2909,7 +2909,7 @@ module.exports = function()
             }
           }
         }
-        
+
       }
     }
     else
@@ -3347,7 +3347,7 @@ module.exports = function(options)
         "state": options.state
       });
     }
-  }  
+  }
 };
 
 },{}],112:[function(require,module,exports){
