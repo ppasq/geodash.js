@@ -10,12 +10,16 @@ module.exports = function(options)
   var controls = [];
   if(extract("dashboard.controls.zoom", options, true)) { controls.push(new ol.control.Zoom()); }
   controls.push(new ol.control.Rotate());
-  if(extract("dashboard.controls.attribution", options, true)) { controls.push(new ol.control.Attribution()); }
-
+  controls.push(new ol.ScaleLine());
+  if(extract("dashboard.controls.attribution", options, true)) { controls.push(new ol.control.Attribution());}
+  // Restore controls
   var map = new ol.Map({
     target: id,
     layers: [],
-    controls: controls,
+    //controls: controls,
+    controls: ol.control.defaults().extend([
+      new ol.control.ScaleLine()
+    ]),
     overlays: [
       new ol.Overlay({element: document.getElementById('popup')})
     ],

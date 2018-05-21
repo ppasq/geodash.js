@@ -2665,28 +2665,29 @@ module.exports = function(options)
   var step = extract("step", options);
 
   var heading = extract("config.bootloader.ui.heading", geodash, "h5");
-  var fontSize = extract("config.bootloader.ui.fontSize", geodash, "2rem");
-  var padding = extract("config.bootloader.ui.padding", geodash, "8px");
+  var fontSize = extract("config.bootloader.ui.fontSize", geodash, "1.5rem");
+  var padding = extract("config.bootloader.ui.padding", geodash, "1rem");
 
   var html_margin = "<div class=\"col-md-2\"></div>";
-  var html_label = "<div class=\"col-md-4\"><"+heading+">"+step.label+"</"+heading+"></div>";
+  var html_label = "<div class=\"col-md-4\"><"+heading+">"+step.label+"</"+heading+"><p style=\"display: none;\" class=\"boring\">The hazard is not present for the selected country.<br>Please <a href=\"/\">search again</a>.</p></div>";
   var html_status = "";
 
   if(step.status == "complete")
   {
-    html_status = "<div class=\"col-md-4 geodash-bootloader-status\"><a><i class=\"fa fa-check\" style=\"font-size: "+fontSize+";\"></i></a></div>";
+    html_status = "<div class=\"col-md-4 geodash-bootloader-status\"><a><i class=\"fa fa-check\" style=\"font-size: 1.5rem;\"></i></a></div>";
   }
   else if(step.status == "pending")
   {
-    html_status = "<div class=\"col-md-4 geodash-bootloader-status\"><a><i class=\"fa fa-refresh fa-spin\" style=\"font-size: "+fontSize+";\"></i></a></div>";
+    html_status = "<div class=\"col-md-4 geodash-bootloader-status\"><a><i class=\"fa fa-refresh fa-spin\" style=\"font-size: 1.5rem;\"></i></a></div>";
   }
   else if(step.status == "waiting")
   {
-    html_status = "<div class=\"col-md-4 geodash-bootloader-status\"><a><i class=\"fa fa-minus\" style=\"font-size: "+fontSize+";\"></i></a></div>";
+    html_status = "<div class=\"col-md-4 geodash-bootloader-status\"><a><i class=\"fa fa-minus\" style=\"font-size: 1.5rem;\"></i></a></div>";
   }
 
   var html = "<div class=\"row geodash-bootloader-step geodash-bootloader-step-"+step.id+"\" style=\"padding:"+padding+";\">"+html_margin+html_label+html_status+html_margin+"</div>";
   element.append(html);
+
 };
 
 },{}],102:[function(require,module,exports){
@@ -2756,20 +2757,29 @@ module.exports = function(options)
   else if(step.status == "error")
   {
     $(".geodash-bootloader-status i", row)
-      .css({ "color": "red" })
+      .css({ "color": "#ff5252" })
       .addClass("fa fa-exclamation-triangle")
       .removeClass("fa-minus fa-refresh fa-spin");
-  }
+    $(".col-md-4 p", row)
+      .css({ "display": "block" })
+  }/*
 
   if(geodash.util.isString(step.message) && step.message.length > 0)
   {
     $(".geodash-bootloader-status i", row)
       .attr({
         "data-toggle": "tooltip",
-        "data-placement": "bottom",
-        "title": step.message
+        "data-placement": "left",
+        //"title": step.message
+        "title": "The hazard is not present for the selected country."
       })
       .tooltip();
+  } */
+  if(angular.isString(step.message) && step.message.length > 0)
+  {
+    $(".col-md-4 p", row)
+    .addClass("lead")
+    .removeClass("boring");
   }
   else
   {
@@ -3216,7 +3226,7 @@ module.exports = {
 module.exports = function($interpolate, $scope)
 {
   geodash.var.history = geodash.var.history || {};
-  
+
   var h = geodash.var.history;
 
   h.state = h.state || {"list": [], cursor: 0};
@@ -3384,7 +3394,7 @@ module.exports = function(options)
 {
   var app = extract("app", options);
   var mainElement = extract("mainElement", options);
-  
+
   app.controller("GeoDashControllerBase", geodash.controllers.GeoDashControllerBase);
   app.controller("GeoDashControllerModal", geodash.controllers.GeoDashControllerModal);
 
@@ -3412,7 +3422,7 @@ module.exports = function(appName, mainElement, loaders)
   geodash.var.apps[appName] = app;
 
   var steps = [
-    {"id": "internals", "label": "Internals", "status": "pending"},
+    {"id": "internals", "label": "Cartographic Frame", "status": "pending"},
     {"id": "dashboard", "label": "Dashboard", "status": "waiting"},
   ];
   geodash.bootloader.ui.update({ "element": mainElement, "steps": steps });
@@ -3427,7 +3437,8 @@ module.exports = function(appName, mainElement, loaders)
   var system_resources = [
     {
       "name": "state",
-      "title": "State",
+      //"title": "State",
+      "title": "Baselayers",
       "local": "data-geodash-dashboard-initial-state-path",
       "remote": "data-geodash-dashboard-initial-state-url",
       "hash": "state",
@@ -3436,7 +3447,8 @@ module.exports = function(appName, mainElement, loaders)
     },
     {
       "name": "stateschema",
-      "title": "State Schema",
+      //"title": "State Schema",
+      "title": "Feature layers",
       "local": "data-geodash-dashboard-state-schema-path",
       "remote": "data-geodash-dashboard-state-schema-url",
       "hash": "stateschema",
@@ -3794,6 +3806,7 @@ module.exports = function(options)
   if(extract("dashboard.controls.zoom", options, true)) { controls.push(new ol.control.Zoom()); }
   controls.push(new ol.control.Rotate());
   if(extract("dashboard.controls.attribution", options, true)) { controls.push(new ol.control.Attribution()); }
+  controls.push(new ol.control.ScaleLine());
 
   var map = new ol.Map({
     target: id,
@@ -4213,7 +4226,7 @@ module.exports = function(options)
         "state": options.state
       });
     }
-  }  
+  }
 };
 
 },{}],141:[function(require,module,exports){
